@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         NATO Enhancements
 // @namespace    http://github.com/Tiny-Giant
-// @version      1.0.0.9
+// @version      1.0.0.10
 // @description  Includes the actual post on the new answers to old questions page of the 10k tools.
 // @author       @TinyGiant
 // @include      /https?:\/\/(meta\.)?stackoverflow.com\/tools\/new-answers-old-questions.*/
@@ -29,8 +29,20 @@ const ScriptToInject = function () {
           if (xhr.status !== 200) {
             reject(xhr);
           } else {
+            const rawText = xhr.responseText;
+            let html = rawText;
+
+            try {
+              const o = JSON.parse(rawText);
+              if (o && o.Html) {
+                html = o.Html;
+              }
+            } catch (e) {
+              html = rawText;
+            }
+
             if (typeof complete === "function") {
-              complete(xhr.responseText);
+              complete(html);
             }
 
             resolve(xhr);
